@@ -1,39 +1,63 @@
 export default {
-	reachableKeys,
-	countPaths,
-	listAcyclicPaths
+  reachableKeys,
+  countPaths,
+  listAcyclicPaths,
 };
-
 
 // ****************************
 
+var nearbyKeys = [
+  [
+    [4, 6],
+    [6, 8],
+    [7, 9],
+    [4, 8],
+    [3, 9, 0],
+    [],
+    [1, 7, 0],
+    [2, 6],
+    [1, 3],
+    [2, 4],
+  ],
+];
+
 function reachableKeys(startingDigit) {
-	// TODO: return which digits a Knight's move
-	// can hop to from a given starting digit/key
-	//
-	// e.g. 3 -> [ 4, 8 ]
-	//      4 -> [ 3, 9, 0 ]
-	//      5 -> []
-	return [];
+  return nearbyKeys[startingDigit];
 }
 
-function countPaths(startingDigit,hopCount) {
-	// TODO: given the digit/key to start from and
-	// the number of hops to take, return a count
-	// of all the possible paths that could be
-	// traversed
-	return 0;
+function countPaths(startingDigit, hopCount) {
+  if (hopCount == 0) return 1;
+  var pathCount = 0;
+  for (let digit of nearbyKeys[startingDigit]) {
+    pathCount += countPaths(digit, hopCount - 1);
+  }
+  return pathCount;
 }
 
 function listAcyclicPaths(startingDigit) {
-	// TODO: given the digit/key to start from,
-	// return a list of the distinct acyclic
-	// paths that are possible to traverse
-	//
-	// e.g. [
-	//   [4, 3, 8, 1, 6, 7, 2, 9],
-	//   [4, 3, 8, 1, 6, 0],
-	//   ...
-	// ]
-	return [];
+  var paths = [];
+  var nextHops = nearbyKeys[startingDigit];
+  for (let nextHop of nextHops) {
+    let path = [startingDigit, nextHop];
+    followPath(path, paths);
+  }
+
+  return paths;
+}
+
+function followPath(path, paths) {
+  var nextHops = nearbyKeys[path[path.length - 1]];
+  var pathForwardFound = false;
+
+  for (let nextHop of nextHops) {
+    if (!path.includes(nextHop)) {
+      pathForwardFound = true;
+      let nextPath = [...path, nextHop];
+      followPath(nextPath.paths);
+    }
+  }
+
+  if (!pathForwardFound) {
+    paths.push(path);
+  }
 }
